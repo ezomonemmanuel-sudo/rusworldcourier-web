@@ -28,12 +28,43 @@ def register_cli(app):
     @click.option("--email", envvar="ADMIN_EMAIL", prompt=False, help="Admin email (or env ADMIN_EMAIL).")
     @click.option("--name", envvar="ADMIN_NAME", default="Administrator", show_default=True)
     @click.option("--password", envvar="ADMIN_PASSWORD", help="Password (or env ADMIN_PASSWORD).")
+    @click.option("--reset-password", is_flag=True,
+                  help="Reset mode for start-up hooks: set the password of the EXISTING user ADMIN_EMAIL to env "
+                       "ADMIN_NEW_PASSWORD (promoting to admin). Does nothing when ADMIN_NEW_PASSWORD is empty.")
     @click.option("--if-missing", is_flag=True,
                   help="Bootstrap mode for start-up hooks: do nothing if email/password are unset or the user already "
                        "exists (never resets an existing password).")
     @with_appcontext
-    def create_admin(email, name, password, if_missing):
+    def create_admin(email, name, password, reset_password, if_missing):
         """Create (or promote) an administrator, non-interactively when options/env are given."""
+        if reset_password:
+            from .forms import strong_password
+            from wtforms.validators import ValidationError
+            new_pw = os.getenv("ADMIN_NEW_PASSWORD", "")
+            if not new_pw:
+                click.echo("create-admin --reset-password: ADMIN_NEW_PASSWORD not set; skipping.")
+                return
+            email = (email or "").strip().lower()
+            if not email:
+                raise click.ClickException("ADMIN_EMAIL is required for --reset-password.")
+
+            class _P:
+                data = new_pw
+            try:
+                strong_password(None, _P)
+            except ValidationError as e:
+                raise click.ClickException(f"Weak password: {e}")
+            u = User.query.filter_by(email=email).first()
+            if not u:
+                raise click.ClickException(f"No user {email}; run create-admin first.")
+            u.role, u.active = "admin", True
+            u.set_password(new_pw)
+            u.failed_logins, u.locked_until = 0, None
+            from .services.audit import audit
+            audit("admin_password_reset_via_cli", "user", email, actor_label="cli")
+            db.session.commit()
+            click.echo(f"Password reset for {email}.")
+            return
         if if_missing:
             if not email or not password:
                 click.echo("create-admin --if-missing: ADMIN_EMAIL/ADMIN_PASSWORD not set; skipping.")

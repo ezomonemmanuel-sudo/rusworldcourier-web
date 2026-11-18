@@ -20,7 +20,7 @@ log = logging.getLogger("rwc.notify")
 
 def email_configured(cfg=None):
     cfg = cfg or current_app.config
-    return bool(cfg["SMTP_HOST"] and cfg["SMTP_FROM"])
+    return bool(cfg["SMTP_HOST"] and cfg["SMTP_FROM"] and (cfg["SMTP_PASSWORD"] or not cfg["SMTP_USER"]))
 
 
 def sms_configured(cfg=None):

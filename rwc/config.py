@@ -33,8 +33,6 @@ class Config:
     COMPANY_NAME = os.getenv("COMPANY_NAME", "RusWorld Courier")
     COMPANY_TAGLINE = "Delivering Beyond Borders"
     COMPANY_EMAIL = os.getenv("COMPANY_EMAIL", "")
-    COMPANY_PHONE = os.getenv("COMPANY_PHONE", "")
-    COMPANY_ADDRESS = os.getenv("COMPANY_ADDRESS", "")
     COMPANY_HOURS = os.getenv("COMPANY_HOURS", "Mon-Fri 09:00-18:00 (Moscow time)")
     COMPANY_REG_NO = os.getenv("COMPANY_REG_NO", "")  # registration / tax number shown in footer + policies
 
