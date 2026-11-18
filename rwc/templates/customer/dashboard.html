@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% from "_macros.html" import badge, pager %}
+{% set noindex = True %}
+{% block title %}My dashboard - {{ company.name }}{% endblock %}
+{% block content %}
+<section class="dash-head"><div class="wrap dash-head-in"><div><p class="eyebrow">Customer dashboard</p><h1>Hello, {{ current_user.name.split()[0] }}</h1></div>
+<div class="actions"><a class="btn btn-primary" href="{{ url_for('customer.book') }}">{{ icon('box', 18) }} Book shipment</a><a class="btn btn-outline" href="{{ url_for('customer.support') }}">Support{% if open_tickets %} ({{ open_tickets }}){% endif %}</a><a class="btn btn-outline" href="{{ url_for('customer.account') }}">Account</a></div></div></section>
+<section class="section tight"><div class="wrap">
+  <div class="stats">
+    <div class="stat"><span>Total shipments</span><strong>{{ stats.total }}</strong></div>
+    <div class="stat"><span>In progress</span><strong>{{ stats.active }}</strong></div>
+    <div class="stat"><span>Delivered</span><strong>{{ stats.delivered }}</strong></div>
+    <div class="stat {{ 'warn' if stats.unpaid }}"><span>Awaiting payment</span><strong>{{ stats.unpaid }}</strong></div>
+  </div>
+  <form class="searchbar" method="get"><input name="q" value="{{ term }}" placeholder="Search tracking number, recipient or city" aria-label="Search shipments"><button class="btn btn-outline" type="submit">Search</button>{% if term %}<a class="btn btn-outline" href="{{ url_for('customer.dashboard') }}">Clear</a>{% endif %}</form>
+  {% if pagination.items %}
+  <div class="table-wrap"><table class="table">
+    <thead><tr><th>Tracking</th><th>To</th><th>Service</th><th>Status</th><th>Payment</th><th class="num">Fee</th><th></th></tr></thead>
+    <tbody>{% for s in pagination.items %}
+      <tr><td><a class="mono" href="{{ url_for('customer.shipment', shipment_id=s.id) }}">{{ s.tracking_number }}</a><br><small class="muted">{{ s.created_at|dt('%d %b %Y') }}</small></td>
+      <td>{{ s.recipient_name }}<br><small class="muted">{{ s.destination_city }}, {{ country_name(s.destination_country) }}</small></td>
+      <td>{{ s.service_type|title }}</td><td>{{ badge(s.status) }}</td><td>{{ badge(s.payment_status) }}</td><td class="num">{{ s.amount|money(s.currency) }}</td>
+      <td class="right"><a class="btn btn-sm btn-outline" href="{{ url_for('customer.shipment', shipment_id=s.id) }}">View</a></td></tr>{% endfor %}
+    </tbody></table></div>
+  {{ pager(pagination, 'customer.dashboard', q=term) }}
+  {% else %}
+  <div class="panel center"><h3>{{ 'No shipments match your search' if term else 'No shipments yet' }}</h3><p class="muted">Get an instant price and book your first parcel.</p><a class="btn btn-primary" href="{{ url_for('customer.book') }}">Book a shipment</a></div>
+  {% endif %}
+</div></section>
+{% endblock %}

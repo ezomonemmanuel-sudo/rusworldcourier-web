@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% from "_macros.html" import field, quote_panel %}
+{% set noindex = True %}
+{% block title %}Book a shipment - {{ company.name }}{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="wrap"><p class="eyebrow">New shipment</p><h1>Book a shipment</h1><p class="lead">Pickup is in Russia. The price is calculated on our server from the details below and shown again before you pay.</p></div></section>
+<section class="section"><div class="wrap quote-grid">
+<form method="post" class="form" id="quote-form" data-live-quote novalidate>
+  {{ form.hidden_tag() }}
+  <fieldset class="panel"><legend>1. Parcel &amp; service</legend>
+    {% include "_quote_fields.html" %}
+    {{ field(form.parcel_description, placeholder="e.g. Books, clothing") }}
+  </fieldset>
+  <fieldset class="panel"><legend>2. Sender &amp; pickup (Russia)</legend>
+    <div class="grid2">{{ field(form.sender_name) }}{{ field(form.sender_phone) }}</div>
+    <div class="grid2">{{ field(form.origin_city) }}{{ field(form.pickup_date, type="date") }}</div>
+    {{ field(form.sender_address) }}
+  </fieldset>
+  <fieldset class="panel"><legend>3. Recipient &amp; delivery</legend>
+    <div class="grid2">{{ field(form.recipient_name) }}{{ field(form.recipient_phone) }}</div>
+    {{ field(form.recipient_email, hint="We'll email the recipient tracking updates.") }}
+    {{ field(form.destination_address) }}
+    <div class="grid2">{{ field(form.destination_city) }}{{ field(form.destination_postcode) }}</div>
+    {{ field(form.notes, rows=3) }}
+  </fieldset>
+  <fieldset class="panel"><legend>4. Confirm</legend>
+    <div class="field{% if form.accept_terms.errors %} has-error{% endif %}"><label class="check">{{ form.accept_terms() }} <span>I agree to the <a href="{{ url_for('public.legal', slug='terms') }}" target="_blank" rel="noopener">Terms</a> and <a href="{{ url_for('public.legal', slug='shipping-policy') }}" target="_blank" rel="noopener">Shipping Policy</a></span></label>{% for e in form.accept_terms.errors %}<small class="err">{{ e }}</small>{% endfor %}</div>
+    <div class="field{% if form.accept_prohibited.errors %} has-error{% endif %}"><label class="check">{{ form.accept_prohibited() }} <span>I confirm the parcel contains no <a href="{{ url_for('public.legal', slug='prohibited-items') }}" target="_blank" rel="noopener">prohibited or restricted items</a></span></label>{% for e in form.accept_prohibited.errors %}<small class="err">{{ e }}</small>{% endfor %}</div>
+    <button class="btn btn-primary" type="submit">Book shipment {{ icon('arrow', 16) }}</button>
+  </fieldset>
+</form>
+<aside class="panel sticky">
+  {{ quote_panel(None, None, currency) }}
+  <p class="small muted">You pay the shipping fee yourself via Paystack after booking. {{ company.name }} never charges recipients release or clearance fees.</p>
+</aside>
+</div></section>
+{% endblock %}

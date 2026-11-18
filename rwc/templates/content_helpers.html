@@ -1,0 +1,8 @@
+{% from "_icons.html" import icon %}
+{% macro faq_list(limit=None) -%}
+<div class="faq">
+  {% for q, a in (faq_items[:limit] if limit else faq_items) %}
+  <details><summary>{{ q }}</summary><p>{{ a }}</p></details>
+  {% endfor %}
+</div>
+{%- endmacro %}

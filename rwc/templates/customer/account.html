@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% from "_macros.html" import field %}
+{% set noindex = True %}
+{% block title %}My account - {{ company.name }}{% endblock %}
+{% block content %}
+<section class="dash-head"><div class="wrap dash-head-in"><div><p class="eyebrow">{{ current_user.role|title }} account</p><h1>Account settings</h1><p class="muted">{{ current_user.email }}</p></div></div></section>
+<section class="section tight"><div class="wrap two-col">
+  <form method="post" class="panel form" novalidate><h3>Profile</h3>{{ pform.hidden_tag() }}{{ field(pform.name) }}{{ field(pform.phone) }}{{ field(pform.sms_opt_in, hint="Only sent if SMS delivery is configured on this site.") }}<button class="btn btn-primary" name="p-submit" value="1" type="submit">Save profile</button></form>
+  <form method="post" class="panel form" novalidate><h3>Change password</h3>{{ cform.hidden_tag() }}{{ field(cform.current, autocomplete="current-password") }}{{ field(cform.password, autocomplete="new-password") }}{{ field(cform.confirm, autocomplete="new-password") }}<button class="btn btn-primary" name="c-submit" value="1" type="submit">Change password</button></form>
+</div></section>
+{% endblock %}
