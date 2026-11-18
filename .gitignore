@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+instance/
+*.db
+.pytest_cache/
+.rwc_secret_value
+*secrets*.env
+*admin*.txt
+.env.*
+!.env.example
+public/
+screenshots/
+*.zip
