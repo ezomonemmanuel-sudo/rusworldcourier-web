@@ -1,0 +1,47 @@
+services:
+  - type: web
+    name: rusworldcourier
+    runtime: python
+    plan: free
+    region: frankfurt
+    buildCommand: pip install -r requirements.txt && python scripts/restore_assets.py
+    startCommand: flask --app app init-db && flask --app app create-admin --if-missing && gunicorn app:app --config gunicorn.conf.py
+    healthCheckPath: /healthz
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: APP_ENV
+        value: production
+      - key: WEB_CONCURRENCY
+        value: "2"
+      - key: SECRET_KEY
+        sync: false
+      - key: SITE_URL
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD   # bootstrap only; blank it after the first admin exists
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: rusworldcourier-db
+          property: connectionString
+      - key: RATELIMIT_STORAGE_URI
+        fromService:
+          type: keyvalue
+          name: rusworldcourier-kv
+          property: connectionString
+
+  - type: keyvalue
+    name: rusworldcourier-kv
+    plan: free
+    region: frankfurt
+    ipAllowList: []
+    maxmemoryPolicy: allkeys-lru
+
+databases:
+  - name: rusworldcourier-db
+    plan: free
+    region: frankfurt
+    databaseName: rusworldcourier_db
+    postgresMajorVersion: "16"
