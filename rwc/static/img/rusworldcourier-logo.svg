@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 120" role="img" aria-labelledby="title desc">
+<title id="title">Rusworldcourier</title><desc id="desc">Navy and orange courier mark with parcel symbol. Delivering Beyond Borders.</desc>
+<g transform="translate(8 10)">
+<path d="M18 67 51 16 116 16 89 35 58 35 40 63 79 63 66 84 12 84Z" fill="#102b52"/>
+<path d="M48 52 91 31 128 31 103 50 75 50 57 76 33 76Z" fill="#f07835"/>
+<path d="M97 16 135 3 124 24 151 18 112 49 119 30 91 39Z" fill="#f07835"/>
+<path d="M93 66 119 53 145 66 119 80Z" fill="#f07835"/>
+<path d="M93 66v29l26 15V80Z" fill="#102b52"/><path d="M119 80v30l26-15V66Z" fill="#d95e25"/>
+<path d="M111 72 119 76 127 72" fill="none" stroke="#fff" stroke-width="3"/>
+</g>
+<text x="175" y="58" font-family="Manrope,Arial,sans-serif" font-size="43" font-weight="800" fill="#102b52" letter-spacing="-1.8">Rusworld<tspan fill="#f07835">courier</tspan></text>
+<text x="178" y="88" font-family="Arial,sans-serif" font-size="15" font-weight="600" fill="#58677d" letter-spacing="1.1">DELIVERING BEYOND BORDERS</text></svg>
