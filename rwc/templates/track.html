@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% from "_macros.html" import badge %}
+{% block title %}{% if shipment %}Tracking {{ shipment.tracking_number }}{% else %}Track Your Parcel{% endif %} | {{ company.name }}{% endblock %}
+{% block description %}Track your RusWorld Courier parcel with a live timeline of every status update.{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="wrap">
+  <p class="eyebrow">Track</p><h1>Track your shipment</h1>
+  <form class="track-box light" action="{{ url_for('public.track_search') }}" method="get" role="search">
+    <label for="track-no">Tracking number</label>
+    <div class="track-row"><input id="track-no" name="number" value="{{ shipment.tracking_number if shipment else (query or '') }}" placeholder="RWC-XXXX-XXXX-XXXX" required maxlength="24" autocomplete="off" autocapitalize="characters"><button class="btn btn-primary" type="submit">{{ icon('search', 18) }} Track</button></div>
+  </form>
+</div></section>
+
+<section class="section"><div class="wrap narrow-wide">
+{% if shipment %}
+  <div class="panel track-summary">
+    <div class="ts-head">
+      <div><p class="eyebrow">Tracking number</p><h2 class="mono">{{ shipment.tracking_number }} <button class="copy" type="button" data-copy="{{ shipment.tracking_number }}" aria-label="Copy tracking number">Copy</button></h2></div>
+      <div class="ts-status">{{ badge(shipment.status) }}<small>Updated {{ shipment.updated_at|dt }}</small></div>
+    </div>
+    <div class="route">
+      <div><small>From</small><strong>{{ shipment.origin_city }}, {{ country_name(shipment.origin_country) }}</strong></div>
+      <div class="route-arrow">{{ icon('plane', 22) }}</div>
+      <div><small>To</small><strong>{{ shipment.destination_city }}, {{ country_name(shipment.destination_country) }}</strong></div>
+    </div>
+    <dl class="facts">
+      <div><dt>Service</dt><dd>{{ shipment.service_type|title }}</dd></div>
+      <div><dt>Weight</dt><dd>{{ shipment.chargeable_weight_kg }} kg chargeable</dd></div>
+      <div><dt>Booked</dt><dd>{{ shipment.created_at|dt('%d %b %Y') }}</dd></div>
+      <div><dt>Recipient</dt><dd>{{ masked_recipient }}</dd></div>
+      {% if shipment.status == 'Delivered' %}<div><dt>Delivered</dt><dd>{{ shipment.delivered_at|dt }}</dd></div>
+      {% elif shipment.est_days_min and shipment.status not in ('Cancelled','Returned to sender') %}<div><dt>Estimated transit</dt><dd>{{ shipment.est_days_min }}-{{ shipment.est_days_max }} working days from pickup</dd></div>{% endif %}
+    </dl>
+
+    {% if shipment.status in ('Cancelled', 'Returned to sender') %}
+      <div class="alert alert-info">This shipment is <strong>{{ shipment.status|lower }}</strong>.</div>
+    {% else %}
+    <ol class="stepper" aria-label="Shipment progress">
+      {% for label, state in steps %}
+      <li class="{{ state }}"><span class="bullet">{% if state == 'done' %}{{ icon('check', 14) }}{% endif %}</span><span class="lbl">{{ label }}</span></li>
+      {% endfor %}
+    </ol>
+    {% if shipment.status in ('Delivery attempted', 'Delivery exception - contact support') %}
+      <div class="alert alert-info">{{ shipment.status }}. Please <a href="{{ url_for('public.contact') }}">contact support</a> quoting your tracking number.</div>
+    {% endif %}
+    {% endif %}
+  </div>
+
+  {% if shipment.is_international %}
+  <div class="info-box" role="note">{{ icon('shield', 22) }}<div><strong>About duties &amp; taxes.</strong> Import duties and taxes are assessed and collected only by the destination customs authority or its official delivery carrier. RusWorld Courier will never ask recipients to pay release fees via this site, bank transfer, crypto or gift cards.</div></div>
+  {% endif %}
+
+  <h3 class="mt">Shipment history</h3>
+  <ol class="timeline">
+    {% for ev in events %}
+    <li class="{{ 'latest' if loop.first }}">
+      <span class="tl-dot"></span>
+      <div class="tl-body"><div class="tl-top"><strong>{{ ev.status }}</strong><time datetime="{{ ev.created_at.isoformat() }}Z">{{ ev.created_at|dt }}</time></div>
+        {% if ev.location %}<div class="tl-loc">{{ icon('pin', 14) }} {{ ev.location }}</div>{% endif %}
+        {% if ev.details %}<p>{{ ev.details }}</p>{% endif %}</div>
+    </li>
+    {% endfor %}
+  </ol>
+  <p class="small muted">Times are shown in UTC. Need help? <a href="{{ url_for('public.contact') }}">Contact us</a> with your tracking number.</p>
+{% elif searched %}
+  <div class="panel center"><h2>We couldn't find that tracking number</h2>
+  <p>Check the number and try again. Valid numbers look like <span class="mono">RWC-XXXX-XXXX-XXXX</span>. If you've just booked, the number is in your confirmation email and dashboard.</p></div>
+{% else %}
+  <div class="panel center"><h2>Enter your tracking number above</h2><p class="muted">Your tracking number starts with <span class="mono">RWC-</span>.</p></div>
+{% endif %}
+</div></section>
+{% endblock %}

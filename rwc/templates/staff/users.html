@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% from "_macros.html" import badge, field, pager, csrf %}
+{% set noindex = True %}
+{% block title %}Staff & users - {{ company.name }}{% endblock %}
+{% block content %}
+{% include "staff/_nav.html" %}
+<section class="section tight"><div class="wrap two-col wide-left">
+  <div>
+    <div class="dash-head-in flush"><h1>{{ 'Customers' if role == 'customer' else 'Staff' }}</h1><div class="actions"><a class="btn btn-sm {{ 'btn-outline' if role == 'customer' else 'btn-primary' }}" href="{{ url_for('staff.users') }}">Staff</a><a class="btn btn-sm {{ 'btn-primary' if role == 'customer' else 'btn-outline' }}" href="{{ url_for('staff.users', role='customer') }}">Customers</a></div></div>
+    <div class="table-wrap"><table class="table dense"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Last login</th><th></th></tr></thead><tbody>
+    {% for u in pagination.items %}<tr><td>{{ u.name }}</td><td>{{ u.email }}</td>
+      <td>{% if u.role != 'customer' and u.id != current_user.id %}<form method="post" action="{{ url_for('staff.change_role', user_id=u.id) }}" class="inline-form">{{ csrf() }}<select name="role" aria-label="Role for {{ u.name }}">{% for r in ['rider','dispatcher','admin'] %}<option {{ 'selected' if u.role == r }}>{{ r }}</option>{% endfor %}</select><button class="btn btn-sm btn-outline" type="submit">Set</button></form>{% else %}{{ u.role }}{% endif %}</td>
+      <td>{{ badge('Active' if u.active else 'Deactivated') }}</td><td>{{ u.last_login_at|dt if u.last_login_at else '-' }}</td>
+      <td class="right">{% if u.id != current_user.id %}<form method="post" action="{{ url_for('staff.toggle_user', user_id=u.id) }}" data-confirm="{{ 'Deactivate' if u.active else 'Reactivate' }} {{ u.email }}?">{{ csrf() }}<button class="btn btn-sm btn-outline" type="submit">{{ 'Deactivate' if u.active else 'Reactivate' }}</button></form>{% endif %}</td></tr>
+    {% endfor %}</tbody></table></div>
+    {{ pager(pagination, 'staff.users', role=role) }}
+  </div>
+  <form method="post" class="panel form" novalidate><h3>Add staff member</h3>{{ form.hidden_tag() }}{{ field(form.name) }}{{ field(form.email) }}{{ field(form.phone) }}{{ field(form.role) }}{{ field(form.password, autocomplete="new-password") }}<button class="btn btn-primary" type="submit">Create account</button></form>
+</div></section>
+{% endblock %}
