@@ -99,3 +99,7 @@ migrations/                 Alembic migrations     tests/  pytest suite     scri
 * Create the first admin with `flask --app app create-admin` (env `ADMIN_EMAIL`, `ADMIN_PASSWORD`) from any shell that has `DATABASE_URL` set (e.g. your laptop using the database's external URL).
 * Free-tier caveats: the web service sleeps after ~15 min idle (cold start ~30-60 s); free Postgres expires 30 days after creation unless upgraded; free Key Value is not persistent. Rate limiting falls back to per-process counters if Redis is unreachable.
 * `/healthz` returns `{"status":"ok","database":"ok"}` when the DB is reachable.
+
+### Email + admin password on Render
+* Support/contact address is `COMPANY_EMAIL`. Gmail SMTP: `SMTP_HOST=smtp.gmail.com`, `SMTP_PORT=587`, `SMTP_SECURITY=starttls`, `SMTP_USER`, `SMTP_FROM`, and `SMTP_PASSWORD` (a Gmail *app password*). Email is treated as configured only when the password is present.
+* To reset the admin password on a free plan (no shell): temporarily set env `ADMIN_NEW_PASSWORD`; the start command runs `create-admin --reset-password`, which sets the password for `ADMIN_EMAIL` and does nothing when the variable is empty. Clear the variable afterwards.

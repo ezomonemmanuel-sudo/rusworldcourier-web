@@ -5,7 +5,7 @@ services:
     plan: free
     region: frankfurt
     buildCommand: pip install -r requirements.txt && python scripts/restore_assets.py
-    startCommand: flask --app app init-db && flask --app app create-admin --if-missing && gunicorn app:app --config gunicorn.conf.py
+    startCommand: flask --app app init-db && flask --app app create-admin --if-missing && flask --app app create-admin --reset-password && gunicorn app:app --config gunicorn.conf.py
     healthCheckPath: /healthz
     envVars:
       - key: PYTHON_VERSION
@@ -18,6 +18,19 @@ services:
         sync: false
       - key: SITE_URL
         sync: false
+      - key: COMPANY_EMAIL
+        value: rusworldcourier@gmail.com
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_SECURITY
+        value: starttls
+      - key: SMTP_USER
+        value: rusworldcourier@gmail.com
+      - key: SMTP_FROM
+        value: RusWorld Courier <rusworldcourier@gmail.com>
+      # SMTP_PASSWORD (Gmail app password) is intentionally NOT listed: set it in the Render dashboard/API, never commit it.
       - key: ADMIN_EMAIL
         sync: false
       - key: ADMIN_PASSWORD   # bootstrap only; blank it after the first admin exists

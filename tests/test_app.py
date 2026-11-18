@@ -683,3 +683,48 @@ def test_create_admin_if_missing(app):
     with app.app_context():
         u = User.query.filter_by(email="boss@example.com").first()
         assert u.role == "admin" and u.check_password("Str0ng-Passphrase-77")
+
+
+def test_create_admin_reset_password(app):
+    from rwc.models import User
+    runner = app.test_cli_runner()
+    env = {"ADMIN_EMAIL": "boss2@example.com", "ADMIN_PASSWORD": "Str0ng-Passphrase-77"}
+    assert "created" in runner.invoke(args=["create-admin"], env=env).output
+    r = runner.invoke(args=["create-admin", "--reset-password"], env={"ADMIN_EMAIL": "boss2@example.com"})
+    assert "skipping" in r.output
+    r = runner.invoke(args=["create-admin", "--reset-password"],
+                      env={"ADMIN_EMAIL": "boss2@example.com", "ADMIN_NEW_PASSWORD": "weak"})
+    assert r.exit_code != 0
+    r = runner.invoke(args=["create-admin", "--reset-password"],
+                      env={"ADMIN_EMAIL": "boss2@example.com", "ADMIN_NEW_PASSWORD": "Brand-New-Passphrase-99"})
+    assert "Password reset" in r.output and "Brand-New" not in r.output
+    r = runner.invoke(args=["create-admin", "--reset-password"],
+                      env={"ADMIN_EMAIL": "nobody@example.com", "ADMIN_NEW_PASSWORD": "Brand-New-Passphrase-99"})
+    assert r.exit_code != 0
+    with app.app_context():
+        u = User.query.filter_by(email="boss2@example.com").first()
+        assert u.check_password("Brand-New-Passphrase-99") and not u.check_password("Str0ng-Passphrase-77")
+
+
+def test_contact_page_only_email(client, app):
+    app.config["COMPANY_EMAIL"] = "rusworldcourier@gmail.com"
+    html = client.get("/contact").get_data(as_text=True)
+    assert "rusworldcourier@gmail.com" in html
+    assert "Phone" not in html and "Address" not in html
+    assert "Not configured" not in html and "COMPANY_" not in html
+    assert "Scam warning" in html and "Mon-Fri" in html
+
+
+def test_no_developer_text_on_public_pages(client, app):
+    app.config["COMPANY_EMAIL"] = ""
+    for path in ["/", "/contact", "/about", "/faq", "/services", "/legal/privacy", "/legal/terms", "/auth/forgot"]:
+        html = client.get(path).get_data(as_text=True)
+        assert "COMPANY_" not in html and "Not configured" not in html and "site owner" not in html, path
+
+
+def test_email_not_ready_without_password(app):
+    from rwc.services import notify
+    cfg = {"SMTP_HOST": "smtp.gmail.com", "SMTP_FROM": "a@b.co", "SMTP_USER": "a@b.co", "SMTP_PASSWORD": ""}
+    assert not notify.email_configured(cfg)
+    cfg["SMTP_PASSWORD"] = "x"
+    assert notify.email_configured(cfg)
