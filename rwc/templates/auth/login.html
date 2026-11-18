@@ -1,0 +1,14 @@
+{% extends "auth/_layout.html" %}
+{% from "_macros.html" import field %}
+{% block title %}Sign in - {{ company.name }}{% endblock %}
+{% block heading %}Sign in{% endblock %}
+{% block form %}
+<form method="post" novalidate>
+  {{ form.hidden_tag() }}
+  {{ field(form.email, autocomplete="username", autofocus=true) }}
+  {{ field(form.password, autocomplete="current-password") }}
+  <p class="small right"><a href="{{ url_for('auth.forgot') }}">Forgot password?</a></p>
+  <button class="btn btn-primary btn-block" type="submit">Sign in</button>
+</form>
+<p class="small center mt">New here? <a href="{{ url_for('auth.register') }}">Create a free account</a></p>
+{% endblock %}
