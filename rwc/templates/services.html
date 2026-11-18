@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Courier Services - Express, Standard & Economy | {{ company.name }}{% endblock %}
+{% block description %}International courier services from Russia: Express, Standard and Economy shipping with insurance, door-to-door pickup and live tracking.{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="wrap"><p class="eyebrow">Services</p><h1>International courier services</h1><p class="lead">Door-to-door pickup in Russia and delivery worldwide, with the tracking and support to match.</p></div></section>
+<section class="section"><div class="wrap">
+  <div class="cards three">
+    {% for key, sv in services.items() %}
+    <article class="card service {% if key == 'express' %}featured{% endif %}">
+      <div class="ico">{{ icon({'express':'zap','standard':'plane','economy':'tag'}[key], 26) }}</div>
+      <h3>{{ sv.name }}</h3><p>{{ sv.blurb }}</p>
+      <ul class="ticks"><li>Door-to-door pickup in Russia</li><li>Full tracking timeline</li><li>Optional insurance</li><li>Price multiplier: ×{{ sv.multiplier }} of the Standard rate</li></ul>
+      <a class="btn btn-outline" href="{{ url_for('public.quote', service=key) }}">Get {{ sv.name }} quote</a>
+    </article>
+    {% endfor %}
+  </div>
+</div></section>
+<section class="section alt"><div class="wrap">
+  <div class="section-head"><p class="eyebrow">Transit times</p><h2>Estimated working days by zone</h2><p class="lead">Estimates from pickup. Not guaranteed; they depend on carrier capacity and destination customs processing.</p></div>
+  <div class="table-wrap"><table class="table">
+    <thead><tr><th>Zone</th><th>Express</th><th>Standard</th><th>Economy</th></tr></thead>
+    <tbody>{% for code, z in zones.items() %}<tr><td><strong>{{ z.name }}</strong></td>{% for k in ['express','standard','economy'] %}<td>{{ z.days[k][0] }}-{{ z.days[k][1] }} days</td>{% endfor %}</tr>{% endfor %}</tbody>
+  </table></div>
+</div></section>
+<section class="section"><div class="wrap">
+  <div class="section-head"><p class="eyebrow">Add-ons &amp; features</p><h2>Included with every shipment</h2></div>
+  <div class="cards four">
+    <article class="card feature">{{ icon('truck', 28) }}<h3>Pickup in Russia</h3><p>Choose a pickup date when you book; a rider is assigned by our dispatchers.</p></article>
+    <article class="card feature">{{ icon('shield', 28) }}<h3>Insurance</h3><p>Declare your contents' value (up to 5,000 {{ currency }}) and add cover at checkout.</p></article>
+    <article class="card feature">{{ icon('printer', 28) }}<h3>Label &amp; receipt</h3><p>Print your shipping label with QR code and a payment receipt from your dashboard.</p></article>
+    <article class="card feature">{{ icon('mail', 28) }}<h3>Notifications</h3><p>Email updates for key milestones, and optional SMS alerts when your carrier is configured.</p></article>
+  </div>
+  <div class="info-box mt">{{ icon('shield', 22) }}<div><strong>Duties &amp; taxes.</strong> Import duties and taxes, where applicable, are assessed and collected only by the destination customs authority or its official delivery carrier. RusWorld Courier will never ask recipients to pay release fees via this site, bank transfer, crypto or gift cards.</div></div>
+</div></section>
+<section class="cta"><div class="wrap cta-in"><div><h2>Need something bigger?</h2><p>For parcels over 70&nbsp;kg, pallets or regular business volumes, contact us for a custom arrangement.</p></div><div class="actions"><a class="btn btn-primary" href="{{ url_for('public.contact') }}">Contact sales</a></div></div></section>
+{% endblock %}

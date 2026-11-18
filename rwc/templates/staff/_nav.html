@@ -1,0 +1,14 @@
+{% from "_icons.html" import icon %}
+<nav class="subnav" aria-label="Staff"><div class="wrap">
+  {% if current_user.is_ops %}
+  <a href="{{ url_for('staff.dashboard') }}" {% if request.endpoint in ('staff.dashboard','staff.shipment') %}aria-current="page"{% endif %}>Shipments</a>
+  <a href="{{ url_for('staff.tickets') }}" {% if request.endpoint in ('staff.tickets','staff.ticket') %}aria-current="page"{% endif %}>Support</a>
+  {% endif %}
+  <a href="{{ url_for('staff.rider_home') }}" {% if request.endpoint in ('staff.rider_home','staff.rider_shipment') %}aria-current="page"{% endif %}>My deliveries</a>
+  {% if current_user.is_admin %}
+  <a href="{{ url_for('staff.users') }}" {% if request.endpoint == 'staff.users' %}aria-current="page"{% endif %}>Staff &amp; users</a>
+  <a href="{{ url_for('staff.audit_log') }}" {% if request.endpoint == 'staff.audit_log' %}aria-current="page"{% endif %}>Audit log</a>
+  <a href="{{ url_for('staff.outbox') }}" {% if request.endpoint == 'staff.outbox' %}aria-current="page"{% endif %}>Outbox</a>
+  {% endif %}
+  <a href="{{ url_for('customer.account') }}" class="push">Account</a>
+</div></nav>
