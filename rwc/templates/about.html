@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}About {{ company.name }} - {{ company.tagline }}{% endblock %}
+{% block description %}{{ company.name }} is an international courier shipping parcels and documents from Russia to destinations worldwide.{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="wrap"><p class="eyebrow">About us</p><h1>{{ company.tagline }}</h1><p class="lead">{{ company.name }} collects parcels in Russia and ships them to people and businesses around the world.</p></div></section>
+<section class="section"><div class="wrap two-col">
+  <div>
+    <h2>Our approach</h2>
+    <p>We believe sending a parcel internationally should be clear: a price you can see before you book, a tracking number you can follow, and a support team you can reach.</p>
+    <p>Our platform gives senders an instant quote calculator, online booking, secure payment of the shipping fee, a printable label and a live tracking timeline. Our dispatchers and riders use the same system to assign pickups and record every status update, with an audit trail behind every change.</p>
+  </div>
+  <div class="cards one">
+    <article class="card feature">{{ icon('shield', 28) }}<h3>Transparent by design</h3><p>One shipping fee, paid by the sender, shown in full before you pay. We do not charge recipients release or clearance fees through this website.</p></article>
+    <article class="card feature">{{ icon('lock', 28) }}<h3>Security first</h3><p>Payments are processed by Paystack. We never see or store card details. Staff actions are logged.</p></article>
+  </div>
+</div></section>
+<section class="section alt"><div class="wrap">
+  <div class="section-head"><p class="eyebrow">Company details</p><h2>Contact &amp; registration</h2></div>
+  <div class="cards three">
+    <div class="card"><h3>Address</h3><p>{{ company.address or 'Registered business address - to be added by the site owner (COMPANY_ADDRESS).' }}</p></div>
+    <div class="card"><h3>Email &amp; phone</h3><p>{{ company.email or 'Email not configured (COMPANY_EMAIL).' }}<br>{{ company.phone or 'Phone not configured (COMPANY_PHONE).' }}</p></div>
+    <div class="card"><h3>Registration</h3><p>{{ company.reg_no or 'Company registration / tax number - to be added (COMPANY_REG_NO).' }}</p></div>
+  </div>
+</div></section>
+{% endblock %}

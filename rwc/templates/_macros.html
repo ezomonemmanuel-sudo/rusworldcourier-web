@@ -1,0 +1,52 @@
+{% macro field(f, hint=None, cls="") -%}
+<div class="field {{ cls }}{% if f.errors %} has-error{% endif %}">
+  {% if f.type == 'BooleanField' %}
+    <label class="check">{{ f() }} <span>{{ f.label.text }}</span></label>
+  {% else %}
+    {{ f.label }}
+    {{ f(**kwargs) }}
+  {% endif %}
+  {% if hint %}<small class="hint">{{ hint }}</small>{% endif %}
+  {% for e in f.errors %}<small class="err" role="alert">{{ e }}</small>{% endfor %}
+</div>
+{%- endmacro %}
+
+{% macro badge(text) -%}
+{% set k = text|lower|replace(' ', '-')|replace('/', '-') %}
+<span class="badge b-{{ k }}">{{ text }}</span>
+{%- endmacro %}
+
+{% macro csrf() -%}<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">{%- endmacro %}
+
+{% macro pager(pagination, endpoint) -%}
+{% if pagination.pages > 1 %}
+<nav class="pager" aria-label="Pagination">
+  {% if pagination.has_prev %}<a class="btn btn-sm btn-outline" href="{{ url_for(endpoint, page=pagination.prev_num, **kwargs) }}">&larr; Previous</a>{% endif %}
+  <span>Page {{ pagination.page }} of {{ pagination.pages }} &middot; {{ pagination.total }} total</span>
+  {% if pagination.has_next %}<a class="btn btn-sm btn-outline" href="{{ url_for(endpoint, page=pagination.next_num, **kwargs) }}">Next &rarr;</a>{% endif %}
+</nav>
+{% endif %}
+{%- endmacro %}
+
+{% macro quote_panel(result=None, error=None, cur='USD') -%}
+<div id="quote-panel" class="quote-panel" data-currency="{{ cur }}">
+  <p class="muted" data-q-empty{% if result or error %} hidden{% endif %}>Fill in the destination and weight to see your price instantly.</p>
+  <div class="alert alert-error" data-q-error role="alert"{% if not error %} hidden{% endif %}>{{ error or '' }}</div>
+  <div data-q-result{% if not result %} hidden{% endif %}>
+    <p class="eyebrow">Estimated shipping fee</p>
+    <p class="quote-total"><span class="cur">{{ cur }}</span> <span data-q="total">{{ '%.2f'|format(result.total) if result else '' }}</span></p>
+    <p class="quote-eta"><span data-q="service_name">{{ result.service_name if result }}</span> to <span data-q="country_name">{{ result.country_name if result }}</span> &middot; about <span data-q="eta">{% if result %}{{ result.days_min }}-{{ result.days_max }}{% endif %}</span> working days</p>
+    <dl class="quote-lines">
+      <div><dt>Zone</dt><dd data-q="zone_name">{{ result.zone_name if result }}</dd></div>
+      <div><dt>Actual weight</dt><dd><span data-q="actual_weight">{{ result.actual_weight if result }}</span> kg</dd></div>
+      <div><dt>Volumetric weight</dt><dd><span data-q="volumetric_weight">{{ result.volumetric_weight if result }}</span> kg</dd></div>
+      <div><dt>Chargeable weight</dt><dd><strong><span data-q="chargeable_weight">{{ result.chargeable_weight if result }}</span> kg</strong></dd></div>
+      <div><dt>Shipping</dt><dd><span data-q="shipping_charge">{{ '%.2f'|format(result.shipping_charge) if result }}</span></dd></div>
+      <div><dt>Fuel surcharge</dt><dd><span data-q="fuel_surcharge">{{ '%.2f'|format(result.fuel_surcharge) if result }}</span></dd></div>
+      <div><dt>Insurance</dt><dd><span data-q="insurance_fee">{{ '%.2f'|format(result.insurance_fee) if result }}</span></dd></div>
+    </dl>
+    <p class="muted small">Estimate based on the current tariff. Final price is confirmed at booking. Import duties and taxes, if any, are set by the destination country's customs authority and are not part of this fee.</p>
+    {{ caller() if caller }}
+  </div>
+</div>
+{%- endmacro %}

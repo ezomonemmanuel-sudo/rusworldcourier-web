@@ -1,0 +1,14 @@
+{% from "_macros.html" import field %}
+<div class="grid2">
+  {{ field(form.country) }}
+  {{ field(form.service) }}
+</div>
+<div class="grid2">
+  {{ field(form.weight_kg, step="0.01", min="0.01", inputmode="decimal", placeholder="e.g. 2.5") }}
+  <div class="field"><label>Dimensions (cm) <small class="hint">optional, for volumetric weight</small></label>
+    <div class="dims">{{ form.length_cm(placeholder="L", step="0.1", min="1", aria_label="Length cm") }}{{ form.width_cm(placeholder="W", step="0.1", min="1", aria_label="Width cm") }}{{ form.height_cm(placeholder="H", step="0.1", min="1", aria_label="Height cm") }}</div>
+    {% for f in (form.length_cm, form.width_cm, form.height_cm) %}{% for e in f.errors %}<small class="err">{{ e }}</small>{% endfor %}{% endfor %}
+  </div>
+</div>
+{{ field(form.declared_value, step="0.01", min="0", inputmode="decimal", placeholder="0.00", hint="Value of contents in " ~ currency ~ " (max 5,000). Needed for insurance: 1.5% of declared value, min 3.00.") }}
+{{ field(form.insure) }}
