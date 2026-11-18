@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% from "_macros.html" import pager, badge %}
+{% set noindex = True %}
+{% block title %}Notification outbox - {{ company.name }}{% endblock %}
+{% block content %}
+{% include "staff/_nav.html" %}
+<section class="section tight"><div class="wrap">
+  <h1>Notification outbox</h1>
+  <div class="alert alert-{{ 'success' if email_ready else 'info' }}">Email (SMTP): <strong>{{ 'configured' if email_ready else 'NOT configured - emails are recorded below as not_sent and are not delivered' }}</strong>. SMS (Twilio): <strong>{{ 'configured' if sms_ready else 'NOT configured' }}</strong>. A message is only marked <em>sent</em> when the provider accepted it.</div>
+  <div class="table-wrap"><table class="table dense"><thead><tr><th>Time (UTC)</th><th>Channel</th><th>Kind</th><th>To</th><th>Subject</th><th>Status</th><th>Error</th></tr></thead><tbody>
+  {% for n in pagination.items %}<tr><td class="nowrap">{{ n.created_at|dt }}</td><td>{{ n.channel }}</td><td>{{ n.kind }}</td><td>{{ n.recipient }}</td><td>{{ n.subject or (n.body or '')[:60] }}</td><td>{{ badge(n.status) }}</td><td class="small">{{ n.error or '' }}</td></tr>
+  {% else %}<tr><td colspan="7" class="center muted">Nothing yet.</td></tr>{% endfor %}</tbody></table></div>
+  {{ pager(pagination, 'staff.outbox') }}
+</div></section>
+{% endblock %}

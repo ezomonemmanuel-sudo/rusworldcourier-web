@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% from "_macros.html" import badge %}
+{% set noindex = True %}
+{% block title %}My deliveries - {{ company.name }}{% endblock %}
+{% block content %}
+{% include "staff/_nav.html" %}
+<section class="section tight"><div class="wrap">
+  <h1>My deliveries</h1><p class="muted">Shipments assigned to {{ current_user.name }}.</p>
+  <h3>Active ({{ active|length }})</h3>
+  <div class="cards two">{% for s in active %}
+    <article class="card rider-card"><div class="between"><a class="mono" href="{{ url_for('staff.rider_shipment', shipment_id=s.id) }}"><strong>{{ s.tracking_number }}</strong></a>{{ badge(s.status) }}</div>
+      <p><strong>Pickup:</strong> {{ s.sender_address }}, {{ s.origin_city }}<br><small>{{ s.sender_name }} &middot; <a href="tel:{{ s.sender_phone }}">{{ s.sender_phone }}</a>{% if s.pickup_date %} &middot; {{ s.pickup_date|dt }}{% endif %}</small></p>
+      <p><strong>Deliver to:</strong> {{ s.destination_city }}, {{ country_name(s.destination_country) }}<br><small>{{ s.recipient_name }}</small></p>
+      <p>{{ badge(s.payment_status) }} <small class="muted">{{ s.chargeable_weight_kg }} kg &middot; {{ s.service_type|title }}</small></p>
+      <a class="btn btn-primary btn-block" href="{{ url_for('staff.rider_shipment', shipment_id=s.id) }}">Open &amp; update</a></article>
+  {% else %}<div class="panel center muted">No active deliveries assigned.</div>{% endfor %}</div>
+  {% if done %}<h3 class="mt">Recently completed</h3><div class="table-wrap"><table class="table dense"><tbody>{% for s in done %}<tr><td class="mono">{{ s.tracking_number }}</td><td>{{ s.destination_city }}</td><td>{{ badge(s.status) }}</td><td>{{ s.updated_at|dt }}</td></tr>{% endfor %}</tbody></table></div>{% endif %}
+</div></section>
+{% endblock %}

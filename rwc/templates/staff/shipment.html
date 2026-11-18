@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% from "_macros.html" import badge, field %}
+{% set noindex = True %}
+{% block title %}{{ s.tracking_number }} - Operations{% endblock %}
+{% block content %}
+{% include "staff/_nav.html" %}
+<section class="section tight"><div class="wrap">
+  <div class="dash-head-in flush"><div><p class="eyebrow"><a href="{{ url_for('staff.dashboard') }}">&larr; All shipments</a></p><h1 class="mono">{{ s.tracking_number }}</h1></div><div class="actions">{{ badge(s.status) }} {{ badge(s.payment_status) }}
+    {% if s.is_paid %}<a class="btn btn-outline btn-sm" href="{{ url_for('customer.label', shipment_id=s.id) }}" target="_blank">Label</a><a class="btn btn-outline btn-sm" href="{{ url_for('customer.receipt', shipment_id=s.id) }}" target="_blank">Receipt</a>{% endif %}</div></div>
+  <div class="detail-grid">
+    <div>
+      <form method="post" action="{{ url_for('staff.update_status', shipment_id=s.id) }}" class="panel form" novalidate><h3>Update status</h3>{{ status_form.hidden_tag() }}
+        <div class="grid2">{{ field(status_form.status) }}{{ field(status_form.location, placeholder="e.g. Moscow hub") }}</div>
+        {{ field(status_form.details, rows=2, placeholder="Shown to the customer on the tracking page") }}
+        {{ field(status_form.received_by, hint="Required when marking Delivered.") }}
+        {% if not s.is_paid %}<div class="alert alert-info">Unpaid: the parcel can't progress past pickup scheduling until the sender's payment is verified.</div>{% endif %}
+        <button class="btn btn-primary" type="submit">Update status</button></form>
+      <div class="panel"><h3>History</h3>
+        <ol class="timeline">{% for ev in events %}<li class="{{ 'latest' if loop.first }}"><span class="tl-dot"></span><div class="tl-body"><div class="tl-top"><strong>{{ ev.status }}</strong><time>{{ ev.created_at|dt }}</time></div>{% if ev.location %}<div class="tl-loc">{{ icon('pin', 14) }} {{ ev.location }}</div>{% endif %}{% if ev.details %}<p>{{ ev.details }}</p>{% endif %}<small class="muted">by {{ ev.actor.name if ev.actor else 'system' }}</small></div></li>{% endfor %}</ol></div>
+    </div>
+    <aside>
+      <form method="post" action="{{ url_for('staff.assign', shipment_id=s.id) }}" class="panel form" novalidate><h3>Rider</h3>{{ assign_form.hidden_tag() }}{{ field(assign_form.rider_id) }}<button class="btn btn-outline" type="submit">Assign rider</button></form>
+      <div class="panel"><h3>Payment</h3>
+        <dl class="kv compact"><dt>Status</dt><dd>{{ badge(s.payment_status) }}</dd><dt>Total</dt><dd>{{ s.amount|money(s.currency) }}</dd></dl>
+        {% if s.payments %}<table class="table dense"><thead><tr><th>Reference</th><th>Status</th><th>Via</th></tr></thead><tbody>{% for p in s.payments %}<tr><td class="mono small">{{ p.reference }}</td><td>{{ p.status }}</td><td>{{ p.verified_via or '-' }}</td></tr>{% endfor %}</tbody></table>{% endif %}
+        {% if s.payment_status == 'Unpaid' %}
+        <form method="post" action="{{ url_for('staff.reverify_payment', shipment_id=s.id) }}" class="form" novalidate><h4>Verify a Paystack reference</h4>{{ reverify_form.hidden_tag() }}{{ field(reverify_form.reference) }}
+          <p class="small muted">"Paid" is only set when Paystack confirms the reference server-side, for this shipment, with the exact amount.{% if not paystack_ready %} <strong>Online payment coming soon: Paystack is not configured yet.</strong>{% endif %}</p>
+          <button class="btn btn-outline" type="submit">Verify with Paystack</button></form>
+        {% endif %}
+        <details class="adjust"><summary>Manual adjustment (audited)</summary>
+          <form method="post" action="{{ url_for('staff.adjust_payment', shipment_id=s.id) }}" class="form" novalidate>{{ adjust_form.hidden_tag() }}{{ field(adjust_form.new_status) }}{{ field(adjust_form.reason, rows=2) }}
+            <p class="small muted">Payment can't be set to Paid manually. Refunds must first be issued in your Paystack dashboard.</p>
+            <button class="btn btn-outline" type="submit">Record adjustment</button></form></details>
+      </div>
+      <div class="panel"><h3>Shipment</h3>
+        <dl class="kv"><dt>Sender</dt><dd>{{ s.sender_name }}<br>{{ s.sender_phone }}<br>{{ s.sender_address }}, {{ s.origin_city }}<br><small class="muted">Account: {{ s.customer.email }}</small></dd>
+        <dt>Recipient</dt><dd>{{ s.recipient_name }}<br>{{ s.recipient_phone }}{% if s.recipient_email %}<br>{{ s.recipient_email }}{% endif %}<br>{{ s.destination_address }}, {{ s.destination_city }} {{ s.destination_postcode or '' }}<br>{{ country_name(s.destination_country) }} (zone {{ s.zone }})</dd>
+        <dt>Contents</dt><dd>{{ s.parcel_description }}</dd><dt>Weight</dt><dd>{{ s.weight_kg }} kg &middot; chargeable {{ s.chargeable_weight_kg }} kg{% if s.length_cm %} &middot; {{ s.length_cm|int }}×{{ s.width_cm|int }}×{{ s.height_cm|int }} cm{% endif %}</dd>
+        <dt>Service</dt><dd>{{ s.service_type|title }}</dd><dt>Insurance</dt><dd>{{ ('Yes, declared ' ~ (s.declared_value|money(s.currency))) if s.insured else 'No' }}</dd>
+        {% if s.pickup_date %}<dt>Pickup date</dt><dd>{{ s.pickup_date|dt }}</dd>{% endif %}{% if s.notes %}<dt>Notes</dt><dd>{{ s.notes }}</dd>{% endif %}
+        {% if s.received_by %}<dt>Received by</dt><dd>{{ s.received_by }}</dd>{% endif %}</dl></div>
+    </aside>
+  </div>
+</div></section>
+{% endblock %}

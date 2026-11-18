@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% from "_macros.html" import badge, field %}
+{% set noindex = True %}
+{% block title %}{{ s.tracking_number }} - Rider{% endblock %}
+{% block content %}
+{% include "staff/_nav.html" %}
+<section class="section tight"><div class="wrap narrow-wide">
+  <p class="eyebrow"><a href="{{ url_for('staff.rider_home') }}">&larr; My deliveries</a></p>
+  <div class="between"><h1 class="mono">{{ s.tracking_number }}</h1>{{ badge(s.status) }}</div>
+  <div class="panel"><dl class="kv"><dt>Pickup</dt><dd>{{ s.sender_name }}, <a href="tel:{{ s.sender_phone }}">{{ s.sender_phone }}</a><br>{{ s.sender_address }}, {{ s.origin_city }}</dd>
+    <dt>Deliver to</dt><dd>{{ s.recipient_name }}, <a href="tel:{{ s.recipient_phone }}">{{ s.recipient_phone }}</a><br>{{ s.destination_address }}, {{ s.destination_city }}, {{ country_name(s.destination_country) }}</dd>
+    <dt>Parcel</dt><dd>{{ s.parcel_description }} &middot; {{ s.weight_kg }} kg</dd>{% if s.notes %}<dt>Notes</dt><dd>{{ s.notes }}</dd>{% endif %}<dt>Payment</dt><dd>{{ badge(s.payment_status) }}{% if not s.is_paid %} <small>Do not collect the parcel until payment shows Paid.</small>{% endif %}</dd></dl></div>
+  <form method="post" class="panel form" novalidate><h3>Update status</h3>{{ form.hidden_tag() }}
+    {{ field(form.status) }}{{ field(form.location, placeholder="Where are you now?") }}{{ field(form.details, rows=2) }}{{ field(form.received_by, hint="Name of the person who received it (required for Delivered).") }}
+    <button class="btn btn-primary btn-block" type="submit">Save update</button></form>
+  <div class="panel"><h3>History</h3><ol class="timeline">{% for ev in events %}<li class="{{ 'latest' if loop.first }}"><span class="tl-dot"></span><div class="tl-body"><div class="tl-top"><strong>{{ ev.status }}</strong><time>{{ ev.created_at|dt }}</time></div>{% if ev.location %}<div class="tl-loc">{{ icon('pin', 14) }} {{ ev.location }}</div>{% endif %}{% if ev.details %}<p>{{ ev.details }}</p>{% endif %}</div></li>{% endfor %}</ol></div>
+</div></section>
+{% endblock %}
