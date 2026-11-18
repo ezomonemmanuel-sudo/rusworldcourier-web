@@ -2,7 +2,7 @@
 {% block title %}Receipt {{ s.tracking_number }}{% endblock %}
 {% block content %}
 <div class="receipt-sheet">
-  <header class="rc-head"><img src="{{ url_for('static', filename='img/rusworldcourier-logo.svg') }}" alt="{{ company.name }}" height="44"><div><h1>Payment receipt</h1><p class="muted">{{ company.name }}{% if company.reg_no %} &middot; Reg. {{ company.reg_no }}{% endif %}<br>{{ company.address }}{% if company.email %}<br>{{ company.email }}{% endif %}</p></div></header>
+  <header class="rc-head"><img src="{{ url_for('static', filename='img/rusworldcourier-logo.svg') }}" alt="{{ company.name }}" height="44"><div><h1>Payment receipt</h1><p class="muted">{{ company.name }}{% if company.reg_no %} &middot; Reg. {{ company.reg_no }}{% endif %}{% if company.email %}<br>{{ company.email }}{% endif %}</p></div></header>
   <dl class="kv rc-meta"><dt>Tracking number</dt><dd class="mono">{{ s.tracking_number }}</dd><dt>Booked by</dt><dd>{{ s.customer.name }} ({{ s.customer.email }})</dd>
   <dt>Payment status</dt><dd>{{ s.payment_status }}</dd>
   {% if payment %}<dt>Paystack reference</dt><dd class="mono">{{ payment.reference }}</dd><dt>Paid at</dt><dd>{{ payment.paid_at|dt }}</dd>{% if payment.channel %}<dt>Channel</dt><dd>{{ payment.channel|title }}</dd>{% endif %}{% endif %}

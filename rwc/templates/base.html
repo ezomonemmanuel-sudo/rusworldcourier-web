@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=1">
   {% block head %}{% endblock %}
   {% if request.endpoint == 'public.home' %}
-  <script type="application/ld+json">{{ {"@context": "https://schema.org", "@type": "Organization", "name": company.name, "url": site_url, "slogan": company.tagline, "logo": site_url ~ url_for('static', filename='img/rusworldcourier-logo.svg'), "email": company.email or None, "telephone": company.phone or None}|tojson }}</script>
+  <script type="application/ld+json">{{ {"@context": "https://schema.org", "@type": "Organization", "name": company.name, "url": site_url, "slogan": company.tagline, "logo": site_url ~ url_for('static', filename='img/rusworldcourier-logo.svg'), "email": company.email or None}|tojson }}</script>
   {% endif %}
 </head>
 <body class="{% block bodyclass %}{% endblock %}">
@@ -74,6 +74,7 @@
     <div>
       <img src="{{ url_for('static', filename='img/rusworldcourier-logo-light.svg') }}" alt="{{ company.name }}" width="190" height="41">
       <p class="small">International courier from Russia to the world. {{ company.tagline }}.</p>
+      {% if company.email %}<p class="small"><a href="mailto:{{ company.email }}">{{ company.email }}</a></p>{% endif %}
       {% if company.reg_no %}<p class="small">Reg. no. {{ company.reg_no }}</p>{% endif %}
     </div>
     <div>

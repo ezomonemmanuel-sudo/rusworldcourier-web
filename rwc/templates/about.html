@@ -18,9 +18,9 @@
 <section class="section alt"><div class="wrap">
   <div class="section-head"><p class="eyebrow">Company details</p><h2>Contact &amp; registration</h2></div>
   <div class="cards three">
-    <div class="card"><h3>Address</h3><p>{{ company.address or 'Registered business address - to be added by the site owner (COMPANY_ADDRESS).' }}</p></div>
-    <div class="card"><h3>Email &amp; phone</h3><p>{{ company.email or 'Email not configured (COMPANY_EMAIL).' }}<br>{{ company.phone or 'Phone not configured (COMPANY_PHONE).' }}</p></div>
-    <div class="card"><h3>Registration</h3><p>{{ company.reg_no or 'Company registration / tax number - to be added (COMPANY_REG_NO).' }}</p></div>
+    {% if company.email %}<div class="card"><h3>Email</h3><p><a href="mailto:{{ company.email }}">{{ company.email }}</a></p></div>{% endif %}
+    <div class="card"><h3>Hours</h3><p>{{ company.hours }}</p></div>
+    {% if company.reg_no %}<div class="card"><h3>Registration</h3><p>{{ company.reg_no }}</p></div>{% endif %}
   </div>
 </div></section>
 {% endblock %}

@@ -15,9 +15,7 @@
     <button class="btn btn-primary" type="submit">Send message {{ icon('arrow', 16) }}</button>
   </form>
   <aside class="side-info">
-    <div class="info-row">{{ icon('mail', 22) }}<div><strong>Email</strong><br>{{ company.email or 'Not configured yet (set COMPANY_EMAIL)' }}</div></div>
-    <div class="info-row">{{ icon('phone', 22) }}<div><strong>Phone</strong><br>{{ company.phone or 'Not configured yet (set COMPANY_PHONE)' }}</div></div>
-    <div class="info-row">{{ icon('pin', 22) }}<div><strong>Address</strong><br>{{ company.address or 'Not configured yet (set COMPANY_ADDRESS)' }}</div></div>
+    {% if company.email %}<div class="info-row">{{ icon('mail', 22) }}<div><strong>Email</strong><br><a href="mailto:{{ company.email }}">{{ company.email }}</a></div></div>{% endif %}
     <div class="info-row">{{ icon('clock', 22) }}<div><strong>Hours</strong><br>{{ company.hours }}</div></div>
     <div class="info-box">{{ icon('shield', 22) }}<div><strong>Scam warning.</strong> We never ask recipients to pay release fees via this site, bank transfer, crypto or gift cards.</div></div>
   </aside>
