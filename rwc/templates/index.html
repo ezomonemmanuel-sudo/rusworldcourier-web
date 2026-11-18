@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% from "content_helpers.html" import faq_list with context %}
+{% block title %}{{ company.name }} - International Courier from Russia | {{ company.tagline }}{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow">International courier &middot; Russia to worldwide</p>
+      <h1>Delivering <em>beyond borders</em>, with tracking you can trust.</h1>
+      <p class="lead">Get an instant price, book a pickup online, pay your shipping fee securely and follow every step of your parcel's journey.</p>
+      <form class="track-box" action="{{ url_for('public.track_search') }}" method="get" role="search" aria-label="Track a shipment">
+        <label for="hero-track">Track your shipment</label>
+        <div class="track-row">
+          <input id="hero-track" name="number" placeholder="RWC-XXXX-XXXX-XXXX" autocomplete="off" autocapitalize="characters" required maxlength="24">
+          <button class="btn btn-primary" type="submit">{{ icon('search', 18) }} Track</button>
+        </div>
+      </form>
+      <div class="hero-actions">
+        <a class="btn btn-ghost-light" href="{{ url_for('public.quote') }}">{{ icon('calc', 18) }} Get an instant quote</a>
+        <a class="btn btn-ghost-light" href="{{ url_for('customer.book') }}">Book a shipment {{ icon('arrow', 16) }}</a>
+      </div>
+    </div>
+    <div class="hero-art" aria-hidden="true">
+      <svg viewBox="0 0 520 400" role="img">
+        <defs><linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#f07835"/><stop offset="1" stop-color="#ffb06d"/></linearGradient></defs>
+        <g fill="none" stroke="#ffffff" stroke-opacity=".08"><circle cx="260" cy="200" r="190"/><circle cx="260" cy="200" r="130"/><circle cx="260" cy="200" r="70"/></g>
+        <g fill="#ffffff" fill-opacity=".14">
+          <circle cx="60" cy="150" r="3"/><circle cx="90" cy="130" r="3"/><circle cx="120" cy="170" r="3"/><circle cx="160" cy="110" r="3"/><circle cx="200" cy="90" r="3"/><circle cx="250" cy="80" r="3"/>
+          <circle cx="300" cy="100" r="3"/><circle cx="350" cy="130" r="3"/><circle cx="400" cy="110" r="3"/><circle cx="450" cy="160" r="3"/><circle cx="420" cy="220" r="3"/><circle cx="360" cy="250" r="3"/>
+          <circle cx="300" cy="300" r="3"/><circle cx="240" cy="330" r="3"/><circle cx="180" cy="290" r="3"/><circle cx="130" cy="240" r="3"/><circle cx="80" cy="260" r="3"/><circle cx="330" cy="190" r="3"/><circle cx="210" cy="180" r="3"/><circle cx="270" cy="230" r="3"/>
+        </g>
+        <g class="routes" fill="none" stroke="url(#g1)" stroke-width="2" stroke-dasharray="6 7" stroke-linecap="round">
+          <path d="M290 120 C 200 40, 120 60, 90 130"/>
+          <path d="M290 120 C 360 40, 440 70, 450 160"/>
+          <path d="M290 120 C 330 190, 380 240, 360 250"/>
+          <path d="M290 120 C 250 230, 270 290, 240 330"/>
+          <path d="M290 120 C 150 180, 120 230, 80 260"/>
+        </g>
+        <g fill="#f07835"><circle cx="90" cy="130" r="6"/><circle cx="450" cy="160" r="6"/><circle cx="360" cy="250" r="6"/><circle cx="240" cy="330" r="6"/><circle cx="80" cy="260" r="6"/></g>
+        <circle cx="290" cy="120" r="16" fill="#f07835" fill-opacity=".25"/><circle cx="290" cy="120" r="9" fill="#fff"/>
+        <text x="306" y="116" fill="#fff" font-family="Manrope,Arial,sans-serif" font-weight="800" font-size="14">Moscow</text>
+      </svg>
+      <div class="hero-card"><span class="dot dot-live"></span><div><strong>RWC-7K4M-9QX2-TH8D</strong><small>Departed origin country &middot; example</small></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="strip">
+  <div class="wrap strip-grid">
+    <div>{{ icon('calc', 22) }}<span><strong>Instant pricing</strong> by real weight &amp; size</span></div>
+    <div>{{ icon('lock', 22) }}<span><strong>Secure checkout</strong> via Paystack</span></div>
+    <div>{{ icon('pin', 22) }}<span><strong>Live tracking</strong> timeline for every parcel</span></div>
+    <div>{{ icon('shield', 22) }}<span><strong>Optional insurance</strong> on declared value</span></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head"><p class="eyebrow">Services</p><h2>Pick the speed that fits your parcel</h2><p class="lead">Three service levels to {{ n_countries }} destinations. Every shipment gets the same tracking, support and secure payment.</p></div>
+    <div class="cards three">
+      {% for key, sv in services.items() %}
+      <article class="card service {% if key == 'express' %}featured{% endif %}">
+        <div class="ico">{{ icon({'express':'zap','standard':'plane','economy':'tag'}[key], 26) }}</div>
+        <h3>{{ sv.name }}</h3>
+        <p>{{ sv.blurb }}</p>
+        <p class="meta">Typical transit to Europe: {{ zones['EUR'].days[key][0] }}-{{ zones['EUR'].days[key][1] }} working days</p>
+        <a class="textlink" href="{{ url_for('public.quote', service=key) }}">Price this service {{ icon('arrow', 16) }}</a>
+      </article>
+      {% endfor %}
+    </div>
+    <p class="center small muted mt">Also: door-to-door pickup in Russia, optional parcel insurance, delivery-notification emails and (opt-in) SMS alerts. <a href="{{ url_for('public.services') }}">See all services</a></p>
+  </div>
+</section>
+
+<section class="section alt">
+  <div class="wrap">
+    <div class="section-head"><p class="eyebrow">How it works</p><h2>From your door to theirs in four steps</h2></div>
+    <ol class="steps">
+      <li><span class="n">1</span><h3>Get a quote</h3><p>Enter destination, weight and size. See the full price breakdown instantly.</p></li>
+      <li><span class="n">2</span><h3>Book &amp; pay</h3><p>Create a free account, add sender and recipient details, then pay the shipping fee securely.</p></li>
+      <li><span class="n">3</span><h3>We collect</h3><p>A rider collects your parcel. Print your shipping label from your dashboard.</p></li>
+      <li><span class="n">4</span><h3>Track to delivery</h3><p>Follow the timeline until your recipient signs for it. Email updates along the way.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap two-col">
+    <div>
+      <p class="eyebrow">Coverage</p>
+      <h2>Worldwide from Russia</h2>
+      <p class="lead">We organise shipping to {{ n_countries }} destination countries across eight pricing zones. Some destinations cannot be served due to sanctions, export-control law or carrier restrictions.</p>
+      <a class="btn btn-primary" href="{{ url_for('public.quote') }}">Check your destination</a>
+    </div>
+    <div class="zones">
+      {% for code, z in zones.items() if code != 'DOM' %}
+      <div class="zone"><strong>{{ z.name }}</strong><span>Standard: {{ z.days.standard[0] }}-{{ z.days.standard[1] }} days</span></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section alt">
+  <div class="wrap">
+    <div class="section-head"><p class="eyebrow">Built for senders</p><h2>Everything you need, nothing hidden</h2></div>
+    <div class="cards four">
+      <article class="card feature">{{ icon('pin', 28) }}<h3>Visual tracking</h3><p>A clear timeline with location and time for every update. Share the link with your recipient.</p></article>
+      <article class="card feature">{{ icon('lock', 28) }}<h3>Honest pricing</h3><p>You pay one shipping fee at booking. We never ask your recipient for release or clearance fees through this site.</p></article>
+      <article class="card feature">{{ icon('shield', 28) }}<h3>Insurance option</h3><p>Declare the value of your contents and add cover for a small percentage.</p></article>
+      <article class="card feature">{{ icon('chat', 28) }}<h3>Real support</h3><p>Open a ticket from your dashboard and follow the reply thread, linked to your shipment.</p></article>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head"><p class="eyebrow">Customer stories</p><h2>What customers say</h2></div>
+    <div class="placeholder-note" role="note">{{ icon('alert', 18) }} <span><strong>Example content.</strong> The testimonials below are placeholders to show the layout. Replace them with real, permissioned customer reviews before launch.</span></div>
+    <div class="cards three">
+      {% for who, role, txt in [("Example Customer A", "Online seller", "Booking took a couple of minutes and the tracking page made it easy to keep my buyer informed."), ("Example Customer B", "Small business", "Clear pricing up front, and the label printed straight from my dashboard."), ("Example Customer C", "Individual sender", "I could follow the parcel step by step and the support ticket thread answered my question.")] %}
+      <figure class="card quote-card is-example"><span class="tag-example">Example</span><div class="stars" aria-hidden="true">{{ icon('star', 16) }}{{ icon('star', 16) }}{{ icon('star', 16) }}{{ icon('star', 16) }}{{ icon('star', 16) }}</div><blockquote>&ldquo;{{ txt }}&rdquo;</blockquote><figcaption><strong>{{ who }}</strong><br><span class="muted">{{ role }}</span></figcaption></figure>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section alt">
+  <div class="wrap narrow">
+    <div class="section-head"><p class="eyebrow">FAQ</p><h2>Frequently asked questions</h2></div>
+    {{ faq_list(6) }}
+    <p class="center mt"><a class="textlink" href="{{ url_for('public.faq') }}">See all questions {{ icon('arrow', 16) }}</a></p>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="wrap cta-in">
+    <div><h2>Ready to ship?</h2><p>Create a free account and book your first parcel in minutes.</p></div>
+    <div class="actions"><a class="btn btn-primary" href="{{ url_for('auth.register') }}">Create free account</a><a class="btn btn-ghost-light" href="{{ url_for('public.quote') }}">Get a quote</a></div>
+  </div>
+</section>
+{% endblock %}

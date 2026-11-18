@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% set noindex = True %}
+{% block title %}{{ title }} - {{ company.name }}{% endblock %}
+{% block content %}
+<section class="wrap narrow center section">
+  <p class="err-code">{{ code }}</p>
+  <h1>{{ title }}</h1>
+  <p class="lead">{{ message }}</p>
+  <p class="actions center-actions"><a class="btn btn-primary" href="{{ url_for('public.home') }}">Back to home</a> <a class="btn btn-outline" href="{{ url_for('public.track_search') }}">Track a parcel</a></p>
+</section>
+{% endblock %}
