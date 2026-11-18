@@ -10,6 +10,8 @@ def _db_url():
     url = os.getenv("DATABASE_URL", "sqlite:///rusworldcourier.db")
     if url.startswith("postgres://"):  # Heroku-style URL
         url = "postgresql://" + url[len("postgres://"):]
+    if url.startswith("postgresql://"):  # SQLAlchemy 2.1 defaults to psycopg3; we ship psycopg2-binary
+        url = "postgresql+psycopg2://" + url[len("postgresql://"):]
     return url
 
 
