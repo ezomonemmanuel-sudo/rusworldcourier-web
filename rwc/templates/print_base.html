@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="csrf-token" content="{{ csrf_token() }}">
+<title>{% block title %}{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=1">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/print.css') }}?v=1">
+</head><body class="print-body">
+<div class="print-bar no-print"><button class="btn btn-outline btn-sm" type="button" data-back>&larr; Back</button><button class="btn btn-primary btn-sm" type="button" data-print>Print</button></div>
+{% block content %}{% endblock %}
+<script src="{{ url_for('static', filename='js/app.js') }}?v=1" defer></script>
+</body></html>

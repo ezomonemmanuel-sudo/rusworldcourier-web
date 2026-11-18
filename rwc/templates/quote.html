@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% from "_macros.html" import quote_panel %}
+{% block title %}Instant Shipping Quote Calculator | {{ company.name }}{% endblock %}
+{% block description %}Get an instant international shipping price from Russia by weight, dimensions, destination and service level, with optional insurance.{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="wrap"><p class="eyebrow">Instant quote</p><h1>How much will it cost?</h1><p class="lead">Price updates as you type. Volumetric weight (L×W×H ÷ 5,000) is applied automatically when you enter dimensions.</p></div></section>
+<section class="section"><div class="wrap quote-grid">
+  <form method="post" class="panel form" id="quote-form" data-live-quote novalidate>
+    {{ form.hidden_tag() }}
+    {% include "_quote_fields.html" %}
+    <button class="btn btn-primary" type="submit">{{ icon('calc', 18) }} Calculate</button>
+  </form>
+  <aside class="panel sticky">
+    {% call quote_panel(result, error, currency) %}
+      <a class="btn btn-primary btn-block" id="book-link" href="{{ url_for('customer.book') }}">Book this shipment {{ icon('arrow', 16) }}</a>
+      <p class="small muted center">You'll be asked to sign in or create a free account.</p>
+    {% endcall %}
+  </aside>
+</div></section>
+{% endblock %}
