@@ -1,0 +1,17 @@
+{% extends "print_base.html" %}
+{% block title %}Receipt {{ s.tracking_number }}{% endblock %}
+{% block content %}
+<div class="receipt-sheet">
+  <header class="rc-head"><img src="{{ url_for('static', filename='img/rusworldcourier-logo.svg') }}" alt="{{ company.name }}" height="44"><div><h1>Payment receipt</h1><p class="muted">{{ company.name }}{% if company.reg_no %} &middot; Reg. {{ company.reg_no }}{% endif %}<br>{{ company.address }}{% if company.email %}<br>{{ company.email }}{% endif %}</p></div></header>
+  <dl class="kv rc-meta"><dt>Tracking number</dt><dd class="mono">{{ s.tracking_number }}</dd><dt>Booked by</dt><dd>{{ s.customer.name }} ({{ s.customer.email }})</dd>
+  <dt>Payment status</dt><dd>{{ s.payment_status }}</dd>
+  {% if payment %}<dt>Paystack reference</dt><dd class="mono">{{ payment.reference }}</dd><dt>Paid at</dt><dd>{{ payment.paid_at|dt }}</dd>{% if payment.channel %}<dt>Channel</dt><dd>{{ payment.channel|title }}</dd>{% endif %}{% endif %}
+  <dt>Route</dt><dd>{{ s.origin_city }}, {{ country_name(s.origin_country) }} &rarr; {{ s.destination_city }}, {{ country_name(s.destination_country) }}</dd></dl>
+  <table class="table"><thead><tr><th>Description</th><th class="num">Amount</th></tr></thead><tbody>
+    <tr><td>{{ s.service_type|title }} shipping ({{ s.chargeable_weight_kg }} kg chargeable, zone {{ s.zone }})</td><td class="num">{{ s.shipping_charge|money(s.currency) }}</td></tr>
+    <tr><td>Fuel surcharge</td><td class="num">{{ s.fuel_surcharge|money(s.currency) }}</td></tr>
+    {% if s.insured %}<tr><td>Insurance (declared value {{ s.declared_value|money(s.currency) }})</td><td class="num">{{ s.insurance_fee|money(s.currency) }}</td></tr>{% endif %}
+  </tbody><tfoot><tr><th>Total shipping fee</th><th class="num">{{ s.amount|money(s.currency) }}</th></tr></tfoot></table>
+  <p class="small muted">This receipt covers the shipping fee paid by the sender only. Import duties and taxes, where applicable, are assessed and collected by the destination customs authority or its official delivery carrier, not by {{ company.name }}.</p>
+</div>
+{% endblock %}

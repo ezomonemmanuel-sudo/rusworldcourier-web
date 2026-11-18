@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% from "_macros.html" import badge, csrf %}
+{% set noindex = True %}
+{% block title %}Shipment {{ s.tracking_number }} - {{ company.name }}{% endblock %}
+{% block content %}
+<section class="dash-head"><div class="wrap dash-head-in"><div><p class="eyebrow"><a href="{{ url_for('customer.dashboard') }}">&larr; Dashboard</a></p><h1 class="mono">{{ s.tracking_number }}</h1></div>
+<div class="actions">{{ badge(s.status) }} {{ badge(s.payment_status) }}</div></div></section>
+<section class="section tight"><div class="wrap detail-grid">
+  <div>
+    {% if s.payment_status == 'Unpaid' and s.status != 'Cancelled' %}
+    <div class="panel pay-box">
+      <div><h3>Pay your shipping fee</h3><p>Total <strong>{{ s.amount|money(s.currency) }}</strong>. Your parcel can't be collected until the shipping fee payment is confirmed.</p>
+      {% if not paystack_ready %}<p class="small"><strong>Online payment coming soon.</strong> Your booking is saved - we'll confirm the payment step with you, or you can <a href="{{ url_for('customer.support') }}">open a support ticket</a>.</p>{% endif %}</div>
+      <form method="post" action="{{ url_for('payments.start', shipment_id=s.id) }}">{{ csrf() }}<button class="btn btn-primary" type="submit" {% if not paystack_ready %}disabled{% endif %}>{{ icon('lock', 18) }} {% if paystack_ready %}Pay with Paystack{% else %}Online payment coming soon{% endif %}</button></form>
+    </div>
+    {% endif %}
+    <div class="panel"><h3>Tracking history</h3>
+      <ol class="timeline">{% for ev in events %}<li class="{{ 'latest' if loop.first }}"><span class="tl-dot"></span><div class="tl-body"><div class="tl-top"><strong>{{ ev.status }}</strong><time>{{ ev.created_at|dt }}</time></div>{% if ev.location %}<div class="tl-loc">{{ icon('pin', 14) }} {{ ev.location }}</div>{% endif %}{% if ev.details %}<p>{{ ev.details }}</p>{% endif %}</div></li>{% endfor %}</ol>
+      <a class="textlink" href="{{ url_for('public.track', number=s.tracking_number) }}">Open public tracking page {{ icon('arrow', 16) }}</a>
+    </div>
+    {% if s.is_international %}<div class="info-box">{{ icon('shield', 22) }}<div>Import duties and taxes are assessed and collected only by the destination customs authority or its official delivery carrier. RusWorld Courier will never ask recipients to pay release fees via this site, bank transfer, crypto or gift cards.</div></div>{% endif %}
+  </div>
+  <aside>
+    <div class="panel"><h3>Shipment</h3>
+      <dl class="kv"><dt>From</dt><dd>{{ s.sender_name }}<br>{{ s.sender_address }}, {{ s.origin_city }}</dd>
+      <dt>To</dt><dd>{{ s.recipient_name }}<br>{{ s.destination_address }}, {{ s.destination_city }} {{ s.destination_postcode or '' }}<br>{{ country_name(s.destination_country) }}</dd>
+      <dt>Contents</dt><dd>{{ s.parcel_description }}</dd>
+      <dt>Weight</dt><dd>{{ s.weight_kg }} kg actual &middot; {{ s.chargeable_weight_kg }} kg chargeable</dd>
+      <dt>Service</dt><dd>{{ s.service_type|title }} ({{ s.est_days_min }}-{{ s.est_days_max }} working days est.)</dd>
+      {% if s.pickup_date %}<dt>Pickup date</dt><dd>{{ s.pickup_date|dt }}</dd>{% endif %}</dl></div>
+    <div class="panel"><h3>Fee</h3>
+      <dl class="kv compact"><dt>Shipping</dt><dd>{{ s.shipping_charge|money(s.currency) }}</dd><dt>Fuel surcharge</dt><dd>{{ s.fuel_surcharge|money(s.currency) }}</dd><dt>Insurance</dt><dd>{{ s.insurance_fee|money(s.currency) }}</dd><dt><strong>Total</strong></dt><dd><strong>{{ s.amount|money(s.currency) }}</strong></dd></dl>
+      <div class="stack">
+        {% if s.is_paid %}<a class="btn btn-primary btn-block" href="{{ url_for('customer.label', shipment_id=s.id) }}" target="_blank">{{ icon('printer', 18) }} Print shipping label</a>{% endif %}
+        {% if s.is_paid or s.payment_status == 'Refunded' %}<a class="btn btn-outline btn-block" href="{{ url_for('customer.receipt', shipment_id=s.id) }}" target="_blank">{{ icon('file', 18) }} View receipt</a>{% endif %}
+        {% if s.status in ('Booking received','Pickup scheduled') and s.payment_status == 'Unpaid' %}
+        <form method="post" action="{{ url_for('customer.cancel', shipment_id=s.id) }}" data-confirm="Cancel this shipment?">{{ csrf() }}<button class="btn btn-outline btn-block" type="submit">Cancel shipment</button></form>{% endif %}
+        <a class="btn btn-outline btn-block" href="{{ url_for('customer.support') }}">{{ icon('chat', 18) }} Contact support</a>
+      </div>
+    </div>
+  </aside>
+</div></section>
+{% endblock %}

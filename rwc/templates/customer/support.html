@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% from "_macros.html" import field, badge %}
+{% set noindex = True %}
+{% block title %}Support - {{ company.name }}{% endblock %}
+{% block content %}
+<section class="dash-head"><div class="wrap dash-head-in"><div><p class="eyebrow"><a href="{{ url_for('customer.dashboard') }}">&larr; Dashboard</a></p><h1>Support tickets</h1></div></div></section>
+<section class="section tight"><div class="wrap two-col wide-left">
+  <div>
+    {% if tickets %}<div class="table-wrap"><table class="table"><thead><tr><th>Ref</th><th>Subject</th><th>Status</th><th>Updated</th></tr></thead><tbody>
+      {% for t in tickets %}<tr><td><a class="mono" href="{{ url_for('customer.ticket', ref=t.reference) }}">{{ t.reference }}</a></td><td>{{ t.subject }}</td><td>{{ badge(t.status) }}</td><td>{{ t.updated_at|dt }}</td></tr>{% endfor %}
+    </tbody></table></div>{% else %}<div class="panel center"><p class="muted">You have no tickets yet.</p></div>{% endif %}
+  </div>
+  <form method="post" class="panel form" novalidate><h3>Open a new ticket</h3>{{ form.hidden_tag() }}
+    {{ field(form.subject) }}<div class="grid2">{{ field(form.category) }}{{ field(form.tracking_number, placeholder="RWC-XXXX-XXXX-XXXX") }}</div>{{ field(form.body, rows=6) }}
+    <button class="btn btn-primary" type="submit">Open ticket</button></form>
+</div></section>
+{% endblock %}

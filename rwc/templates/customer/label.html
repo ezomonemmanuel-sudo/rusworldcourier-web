@@ -1,0 +1,24 @@
+{% extends "print_base.html" %}
+{% block title %}Label {{ s.tracking_number }}{% endblock %}
+{% block content %}
+<div class="label-sheet">
+  <header class="lb-head"><img src="{{ url_for('static', filename='img/rusworldcourier-logo.svg') }}" alt="{{ company.name }}" height="40"><div class="lb-svc"><strong>{{ s.service_type|upper }}</strong><span>{{ s.zone }}</span></div></header>
+  <section class="lb-addr">
+    <div><small>FROM</small><p><strong>{{ s.sender_name }}</strong><br>{{ s.sender_address }}<br>{{ s.origin_city }}, {{ country_name(s.origin_country) }}<br>{{ s.sender_phone }}</p></div>
+    <div class="lb-to"><small>TO</small><p class="big"><strong>{{ s.recipient_name }}</strong><br>{{ s.destination_address }}<br>{{ s.destination_city }} {{ s.destination_postcode or '' }}<br><strong>{{ country_name(s.destination_country)|upper }}</strong><br>{{ s.recipient_phone }}</p></div>
+  </section>
+  <section class="lb-meta">
+    <div><small>Weight (chargeable)</small><strong>{{ s.chargeable_weight_kg }} kg</strong></div>
+    <div><small>Actual</small><strong>{{ s.weight_kg }} kg</strong></div>
+    {% if s.length_cm %}<div><small>Dimensions</small><strong>{{ s.length_cm|round(0)|int }}×{{ s.width_cm|round(0)|int }}×{{ s.height_cm|round(0)|int }} cm</strong></div>{% endif %}
+    <div><small>Contents</small><strong>{{ s.parcel_description }}</strong></div>
+    <div><small>Insured</small><strong>{{ 'Yes - ' ~ (s.declared_value|money(s.currency)) if s.insured else 'No' }}</strong></div>
+    <div><small>Booked</small><strong>{{ s.created_at|dt('%d %b %Y') }}</strong></div>
+  </section>
+  <section class="lb-track">
+    <div class="lb-qr">{{ qr|safe }}</div>
+    <div><small>TRACKING NUMBER</small><p class="lb-no">{{ s.tracking_number }}</p><p class="small">Scan the QR code or visit<br>{{ site_url }}/track</p></div>
+  </section>
+  <footer class="lb-foot">Fee paid by sender. {{ company.name }} never asks recipients to pay release fees.</footer>
+</div>
+{% endblock %}
