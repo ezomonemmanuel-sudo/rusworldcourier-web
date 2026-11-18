@@ -1,0 +1,21 @@
+# Example production-like stack: app + Postgres + Redis (shared rate-limit storage).
+# Create .env first (see .env.example). SECRET_KEY, PAYSTACK_*, SITE_URL etc. are read from it.
+services:
+  web:
+    build: .
+    env_file: .env
+    environment:
+      APP_ENV: production
+      DATABASE_URL: postgresql://rwc:rwc@db:5432/rwc
+      RATELIMIT_STORAGE_URI: redis://redis:6379/0
+      TRUSTED_PROXY_HOPS: "1"
+    ports: ["8000:8000"]
+    depends_on: [db, redis]
+  db:
+    image: postgres:16
+    environment: {POSTGRES_USER: rwc, POSTGRES_PASSWORD: rwc, POSTGRES_DB: rwc}
+    volumes: [pgdata:/var/lib/postgresql/data]
+  redis:
+    image: redis:7
+volumes:
+  pgdata:
