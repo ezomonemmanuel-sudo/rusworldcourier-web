@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% set noindex = True %}
+{% block title %}Message sent - {{ company.name }}{% endblock %}
+{% block content %}
+<section class="wrap narrow center section"><h1>Thank you, we've got your message</h1>
+<p class="lead">Your reference is <strong>{{ ref }}</strong>. Our team will reply by email.</p>
+<p><a class="btn btn-primary" href="{{ url_for('public.home') }}">Back to home</a></p></section>
+{% endblock %}

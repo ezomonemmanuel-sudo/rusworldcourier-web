@@ -1,0 +1,10 @@
+{% extends "auth/_layout.html" %}
+{% from "_macros.html" import field %}
+{% block title %}Choose a new password - {{ company.name }}{% endblock %}
+{% block heading %}Choose a new password{% endblock %}
+{% block form %}
+<form method="post" novalidate>{{ form.hidden_tag() }}
+  {{ field(form.password, autocomplete="new-password", hint="At least 10 characters, with letters and numbers.") }}
+  {{ field(form.confirm, autocomplete="new-password") }}
+  <button class="btn btn-primary btn-block" type="submit">Set new password</button></form>
+{% endblock %}

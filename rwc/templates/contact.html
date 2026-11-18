@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% from "_macros.html" import field %}
+{% block title %}Contact {{ company.name }}{% endblock %}
+{% block description %}Contact RusWorld Courier for shipping questions, business accounts and support.{% endblock %}
+{% block content %}
+<section class="page-hero"><div class="wrap"><p class="eyebrow">Contact</p><h1>We're here to help</h1><p class="lead">Send us a message and we'll reply by email. Existing customers: open a support ticket from your dashboard so it's linked to your shipment.</p></div></section>
+<section class="section"><div class="wrap two-col wide-left">
+  <form method="post" class="panel form" novalidate>
+    {{ form.hidden_tag() }}
+    <div class="grid2">{{ field(form.name, autocomplete="name") }}{{ field(form.email, autocomplete="email") }}</div>
+    {{ field(form.subject) }}
+    {{ field(form.body, rows=6) }}
+    <div class="hp" aria-hidden="true"><label>Leave this empty {{ form.website(tabindex=-1, autocomplete="off") }}</label></div>
+    <button class="btn btn-primary" type="submit">Send message {{ icon('arrow', 16) }}</button>
+  </form>
+  <aside class="side-info">
+    <div class="info-row">{{ icon('mail', 22) }}<div><strong>Email</strong><br>{{ company.email or 'Not configured yet (set COMPANY_EMAIL)' }}</div></div>
+    <div class="info-row">{{ icon('phone', 22) }}<div><strong>Phone</strong><br>{{ company.phone or 'Not configured yet (set COMPANY_PHONE)' }}</div></div>
+    <div class="info-row">{{ icon('pin', 22) }}<div><strong>Address</strong><br>{{ company.address or 'Not configured yet (set COMPANY_ADDRESS)' }}</div></div>
+    <div class="info-row">{{ icon('clock', 22) }}<div><strong>Hours</strong><br>{{ company.hours }}</div></div>
+    <div class="info-box">{{ icon('shield', 22) }}<div><strong>Scam warning.</strong> We never ask recipients to pay release fees via this site, bank transfer, crypto or gift cards.</div></div>
+  </aside>
+</div></section>
+{% endblock %}
