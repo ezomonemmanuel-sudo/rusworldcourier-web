@@ -4,7 +4,7 @@
 {% block heading %}Reset your password{% endblock %}
 {% block form %}
 <p class="muted">Enter your account email and we'll send you a one-time link, valid for 1 hour.</p>
-{% if not email_ready %}<div class="alert alert-info">Email delivery is not configured on this server yet, so reset emails cannot be sent. The site administrator can see this in the Outbox, or can set a new password for you.</div>{% endif %}
+{% if not email_ready %}<div class="alert alert-info">Password reset emails are temporarily unavailable.{% if company.email %} Please contact <a href="mailto:{{ company.email }}">{{ company.email }}</a> and we will help you regain access.{% endif %}</div>{% endif %}
 <form method="post" novalidate>{{ form.hidden_tag() }}{{ field(form.email, autocomplete="username") }}<button class="btn btn-primary btn-block" type="submit">Send reset link</button></form>
 <p class="small center mt"><a href="{{ url_for('auth.login') }}">Back to sign in</a></p>
 {% endblock %}

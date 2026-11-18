@@ -87,7 +87,7 @@ def register_filters(app):
         c = app.config
         return {
             "company": {k.replace("COMPANY_", "").lower(): c[k] for k in
-                        ("COMPANY_NAME", "COMPANY_TAGLINE", "COMPANY_EMAIL", "COMPANY_PHONE", "COMPANY_ADDRESS",
+                        ("COMPANY_NAME", "COMPANY_TAGLINE", "COMPANY_EMAIL",
                          "COMPANY_HOURS", "COMPANY_REG_NO")},
             "site_url": c["SITE_URL"], "currency": c["CURRENCY"], "year": datetime.utcnow().year,
             "paystack_ready": paystack.configured(), "all_statuses": ALL_STATUSES, "country_name": country_name,
